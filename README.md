@@ -1,206 +1,295 @@
-# LabLens — AI-Powered Medical & Lab Report Analyzer
+const fs = require('fs');
+const path = require('path');
 
-### *Your Lab Results, Clearly Explained. Scan. Analyze. Understand.*
+const readmeContent = `# <p align="center"><img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Flask-Dark.svg" width="36" height="36" alt="LabLens" align="center"/> <strong>LabLens</strong> — AI-Powered Medical Report Analyzer</p>
 
-LabLens is a production-ready, fully responsive, and highly interactive Next.js 15+ SaaS web application that helps users upload and understand their laboratory and medical reports. By leveraging Google Gemini Vision and language models, LabLens automatically extracts test metrics, flags values outside lab reference boundaries, translates complex terminology into simple definitions, generates AI summaries, and provides an interactive educational chatbot.
+<p align="center">
+  <em>Transforming complex diagnostic laboratory sheets into clear, actionable, patient-friendly health intelligence.</em>
+</p>
+
+<p align="center">
+  <a href="#-key-features"><img src="https://img.shields.io/badge/Next.js-15.0+-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
+  <a href="#-key-features"><img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" /></a>
+  <a href="#-key-features"><img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="#-key-features"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
+  <a href="#-ai-engine--architecture"><img src="https://img.shields.io/badge/Google_Gemini-2.5_Flash-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Google Gemini" /></a>
+  <a href="#-database--auth"><img src="https://img.shields.io/badge/Supabase-Database_%26_Auth-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" /></a>
+  <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License" /></a>
+</p>
+
+<p align="center">
+  <a href="#-overview">Overview</a> •
+  <a href="#-key-features">Key Features</a> •
+  <a href="#-preview--ui-walkthrough">UI Preview</a> •
+  <a href="#-system-architecture">Architecture</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-project-structure">Folder Structure</a> •
+  <a href="#-getting-started">Quick Start</a> •
+  <a href="#-environmental-variables">Environment</a> •
+  <a href="#-disclaimer">Disclaimer</a>
+</p>
 
 ---
 
-## Key Features
+## 🖼️ Preview & UI Walkthrough
 
-1. **Smart Report Upload & Drag-and-Drop:** Upload scan results, report images (JPG, JPEG, PNG), or text document PDFs up to 10MB.
-2. **Intelligent OCR & Data Extraction:** Automatically reads and structures lab names, report dates, test parameters, numeric values, units, and printed reference limits.
-3. **Reference Range Cross-Evaluation:** Highlights values that fall *low*, *high*, or *borderline* compared specifically to the reference scale defined on the report.
-4. **AI-Powered Summary & Translations:** Translates medical jargon into plain, patient-friendly definitions.
-5. **Interactive Conversational AI Assistant:** Ask questions about specific test parameters (e.g., "What does Vitamin D measure?") with strict clinical safety guardrails (no diagnosis, no prescription recommendations).
-6. **Health Trends Dashboard:** Tracks and charts historical fluctuations of specific test parameters over time using interactive line charts.
-7. **Client-Side PDF Summary Download:** Generate and download a formatted PDF summary of report details, test values, and AI summaries with a single click.
-8. **Dual-Mode System (Demo Mode & Real Database Mode):** Works out of the box in high-fidelity **Demo Mode** using mock databases and simulated extractors. Simply add API keys to switch to active **Gemini Vision OCR** and **Supabase Database/Auth** integrations.
-9. **Dark Mode Support:** Fully compliant light/dark theme toggle remembering user choices locally.
+<p align="center">
+  <img src="./public/lablens-preview.jpg" alt="LabLens Dashboard Mockup Preview" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.1);" />
+</p>
+
+<p align="center">
+  <sub>✨ <i>LabLens interactive dashboard with real-time biometric biomarker classification, visual health risk index, and Gemini-driven diagnostics.</i></sub>
+</p>
 
 ---
 
-## Tech Stack
+## 🌟 Overview
 
-- **Frontend:** Next.js 15+, React 19, TypeScript, Tailwind CSS v4, Lucide React (Icons), Framer Motion (Animations).
-- **Data Visualization:** Recharts (Summary donut charts, interactive health trends line charts).
-- **Backend Services:** Next.js Server Actions.
-- **AI Engine:** Google Gemini API SDK (`@google/generative-ai` using `gemini-2.5-flash`).
-- **Database & Authentication:** Supabase Client (`@supabase/supabase-js` wrapping PostgreSQL and Auth).
-- **PDF Generation:** `jspdf` client-side document layout designer.
+**LabLens** is an intelligent, privacy-conscious medical report analyzer application. Patients frequently receive laboratory test sheets filled with intricate medical jargon, cryptic unit measurements (e.g., \`x10³/µL\`, \`mg/dL\`, \`mIU/L\`), and overwhelming reference ranges. 
+
+**LabLens** solves this by combining **Multimodal Optical Character Recognition (OCR)** powered by **Google Gemini 2.5 Flash** with clinical translation logic. It extracts individual test metrics, evaluates them against diagnostic normal/high/low reference boundaries, provides human-readable explanations ("What it measures" & "What your result means"), and charts longitudinal biometric health trends over time.
 
 ---
 
-## Directory Structure
+## 🚀 Key Features
 
-```text
-src/
-├── app/                        # Next.js App Router Pages
-│   ├── layout.tsx              # Root wrapper (Theme provider, Auth context)
-│   ├── page.tsx                # Landing Page (Sticky navbar, Hero, Features, timeline, FAQs, footer)
-│   ├── login/                  # Login Page (Split-screen visual form)
-│   ├── register/               # Register Page (Validation forms)
-│   └── dashboard/              # Protected Dashboard Route
-│       ├── layout.tsx          # Shared Dashboard layout (Guarded Session, Sidebar + Header)
-│       ├── page.tsx            # Dashboard Overview (Health stats cards, Recent reports, Quick actions)
-│       ├── analyze/            # Upload report workspace (Drag & Drop, progress tickers, Base64 encoder)
-│       ├── assistant/          # AI Chat Assistant (Context selector, prompt chips, chat bubbles)
-│       ├── reports/            # My Reports List Page
-│       │   └── [id]/           # Detailed Report Analysis (Donut chart, Test tables, details drawers)
-│       ├── trends/             # Health Trends page (Dynamic parameter chart, date filters, stats deltas)
-│       ├── profile/            # User Profile settings (Personal details, avatar displays)
-│       └── settings/           # UI Settings (Theme switchers, Data management, Dev credentials panel)
-├── components/                 # Reusable UI components
-│   ├── dashboard/              # Sidebar & Header
-│   ├── auth-context.tsx        # Session state provider (Supabase Auth / LocalStorage fallback)
-│   ├── theme-provider.tsx      # Dark Mode transition context
-│   └── LabLensLogo.tsx         # SVG Icon Flask + Lens brand logo
-├── lib/                        # Utility & Integration classes
-│   ├── db.ts                   # Supabase Database client actions (with local storage mock fallbacks)
-│   ├── gemini.ts               # Google Gemini API server actions (with Vision OCR simulated extraction)
-│   ├── pdf.ts                  # jsPDF drawing layout builder
-│   ├── types.ts                # TypeScript schemas (LabReport, ReportTest, ChatMessage, etc.)
-│   └── utils.ts                # Class merger (cn) & formatted date helpers
-└── services/                   # Business data layer
-    └── mockData.ts             # Prepopulated CBC, Vitamin, and Lipid mockup records
+<table>
+  <tr>
+    <td width="50%">
+      <h3>📄 Multimodal Document Ingestion</h3>
+      <p>Seamlessly drag-and-drop or upload medical lab reports in <strong>PDF, PNG, JPG, or JPEG</strong> format (up to 10MB). Handles single and multi-page lab sheets.</p>
+    </td>
+    <td width="50%">
+      <h3>🧠 Gemini 2.5 Flash AI Extraction</h3>
+      <p>Utilizes Google's state-of-the-art vision models to extract laboratory names, test dates, patient metadata, biomarkers, units, and reference limits into structured JSON.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🔬 Dynamic Range Cross-Evaluation</h3>
+      <p>Automatically flags test values as <kbd>🟢 Normal</kbd>, <kbd>🔴 High</kbd>, <kbd>🔵 Low</kbd>, or <kbd>🟡 Borderline</kbd> based on the lab's printed reference boundaries.</p>
+    </td>
+    <td width="50%">
+      <h3>💡 Jargon-Free Patient Explanations</h3>
+      <p>Translates complex clinical terminology (e.g., Ferritin, MCV, SGPT, eGFR, HbA1c) into clear summaries answering: <em>"What does this measure?"</em> and <em>"What does my result mean?"</em>.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>📈 Longitudinal Health Trends</h3>
+      <p>Visualize chronological changes across repeated lab tests using interactive <strong>Recharts</strong> line graphs to spot health patterns before they become clinical issues.</p>
+    </td>
+    <td width="50%">
+      <h3>🤖 Clinical AI Health Assistant</h3>
+      <p>Ask contextual questions regarding your uploaded reports with conversational memory and strict safety guardrails preventing unverified self-medication.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>📑 One-Click PDF Clinical Summary</h3>
+      <p>Generate clean, exportable PDF summary reports using <code>jspdf</code> to easily share key insights and anomalous markers with your primary care physician.</p>
+    </td>
+    <td width="50%">
+      <h3>⚡ Instant Demo & Production Modes</h3>
+      <p>Ships with built-in high-fidelity <strong>Demo Mode</strong> featuring pre-loaded CBC, Vitamin Panels, and Lipid tests. Plug in API keys anytime for live cloud sync.</p>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 📐 System Architecture
+
+```mermaid
+flowchart TD
+    A[📄 Patient Lab Report PDF / Image] --> B[📤 Upload & Base64 Encoder]
+    B --> C{API Key Configured?}
+    
+    C -- Yes --> D[🧠 Google Gemini 2.5 Flash Multimodal Vision API]
+    C -- No (Demo Mode) --> E[⚡ High-Fidelity Mock Diagnostic Engine]
+    
+    D --> F[📋 Structured JSON Biomarker Extraction]
+    E --> F
+    
+    F --> G[🔬 Reference Range Boundary Classifier]
+    G --> H1[🟢 Normal Values]
+    G --> H2[🔴 High Flagged Anomalies]
+    G --> H3[🔵 Low Flagged Deficiencies]
+    
+    F --> I[📊 Interactive Health Trends & Recharts]
+    F --> J[🤖 Guardrailed AI Health Assistant Chat]
+    F --> K[📑 jspdf Instant Summary Export]
+    
+    H1 & H2 & H3 --> L[💻 Responsive Next.js 15 UI Dashboard]
+    I --> L
+    J --> L
+    K --> L
 ```
 
 ---
 
-## Installation & Local Development
+## 🛠️ Tech Stack
 
-### 1. Clone & Install Dependencies
-Navigate to the root project directory:
-```bash
+<div align="center">
+
+| Layer | Technologies |
+|---|---|
+| **Frontend Framework** | ![Next.js](https://img.shields.io/badge/Next.js_15-black?logo=nextdotjs) ![React](https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript_5-007ACC?logo=typescript&logoColor=white) |
+| **Styling & Icons** | ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Lucide](https://img.shields.io/badge/Lucide_Icons-F56565?logo=lucide&logoColor=white) |
+| **Artificial Intelligence** | ![Google Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-8E75B2?logo=googlegemini&logoColor=white) ![Generative AI](https://img.shields.io/badge/Google_GenAI_SDK-4285F4?logo=google&logoColor=white) |
+| **Charts & Visuals** | ![Recharts](https://img.shields.io/badge/Recharts-22B5BF?logo=chartdotjs&logoColor=white) ![Framer Motion](https://img.shields.io/badge/Framer_Motion-black?logo=framer&logoColor=white) |
+| **Backend & Storage** | ![Next Server Actions](https://img.shields.io/badge/Server_Actions-black?logo=nextdotjs) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white) |
+| **Document Export** | ![jsPDF](https://img.shields.io/badge/jsPDF-Client_PDF_Gen-EC1C24?logo=adobeacrobatreader&logoColor=white) |
+
+</div>
+
+---
+
+## 📁 Project Structure
+
+\`\`\`plaintext
+REPORT LEBLENS/
+├── public/                     # Static assets, SVG icons, and banner preview
+│   ├── lablens-preview.jpg     # Dashboard showcase image
+│   ├── favicon.ico             # Application favicon
+│   └── *.svg                   # System vector assets
+├── src/
+│   ├── app/                    # Next.js 15 App Router
+│   │   ├── dashboard/          # Protected Patient Portal
+│   │   │   ├── analyze/        # Multi-file upload, OCR & extraction pipeline
+│   │   │   ├── assistant/      # Context-aware AI Chatbot with medical guardrails
+│   │   │   ├── profile/        # Patient profile & personal health records
+│   │   │   ├── reports/        # Stored report archives & test details
+│   │   │   ├── settings/       # Theme, API Keys, and preferences
+│   │   │   ├── trends/         # Historical biomarker visualization charts
+│   │   │   ├── layout.tsx      # Dashboard navigation layout with sidebar
+│   │   │   └── page.tsx        # Dashboard overview metrics & quick actions
+│   │   ├── login/              # Authentication & Guest login portal
+│   │   ├── register/           # New patient account registration
+│   │   ├── globals.css         # Global Tailwind & design token stylesheet
+│   │   ├── layout.tsx          # Root layout with ThemeProvider & AuthProvider
+│   │   └── page.tsx            # High-conversion Landing Page & feature showcase
+│   ├── components/             # Reusable UI component library
+│   │   ├── dashboard/          # Header, Sidebar, Metric Cards, Status Badges
+│   │   ├── auth-context.tsx    # Session management & user state provider
+│   │   ├── theme-provider.tsx  # Dark / Light theme context provider
+│   │   └── LabLensLogo.tsx     # Custom SVG brand mark
+│   ├── lib/                    # Core business logic & integrations
+│   │   ├── db.ts               # Database abstraction (Supabase + Local Fallback)
+│   │   ├── gemini.ts           # Gemini 2.5 Flash Vision OCR & AI prompt pipelines
+│   │   ├── pdf.ts              # Client-side PDF generation & parser utilities
+│   │   ├── types.ts            # TypeScript interfaces & data contracts
+│   │   └── utils.ts            # Tailwind clsx/twMerge helper functions
+│   └── services/               # Mock dataset & simulated test generators
+│       └── mockData.ts         # High-fidelity CBC, Vitamin, & Lipid mock reports
+├── .env.example                # Template for environment configuration
+├── package.json                # Project dependencies & npm scripts
+├── tsconfig.json               # TypeScript compiler options
+└── README.md                   # Project documentation
+\`\`\`
+
+---
+
+## ⚡ Getting Started
+
+Follow these steps to run LabLens locally on your machine.
+
+### 1️⃣ Prerequisites
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (version **18.18.0** or higher recommended)
+- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/) or [yarn](https://yarnpkg.com/)
+
+### 2️⃣ Clone Repository
+\`\`\`bash
+git clone https://github.com/your-username/lablens-report-analyzer.git
+cd lablens-report-analyzer
+\`\`\`
+
+### 3️⃣ Install Dependencies
+\`\`\`bash
 npm install
-```
+\`\`\`
 
-### 2. Configure Environment Variables
-Create a `.env.local` file by copying the template:
-```bash
-copy .env.example .env.local
-```
+### 4️⃣ Set Up Environment Variables
+Create a \`.env.local\` file in the root directory:
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
 
-### 3. Launch Development Server
-```bash
+Populate the required credentials (or leave blank to automatically run in **Demo Mode**):
+\`\`\`env
+# Google Gemini AI Key for Vision OCR & Chatbot
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# (Optional) Supabase Database & Auth Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+\`\`\`
+
+### 5️⃣ Launch Development Server
+\`\`\`bash
 npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
+\`\`\`
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view LabLens!
 
 ---
 
-## Database Integration (Supabase Setup)
+## 🧪 Sample Demonstration Reports
 
-If you wish to deploy the app with real database persistence, create a project on [Supabase](https://supabase.com) and execute the following SQL scripts in the SQL Editor to initialize the tables:
+LabLens includes comprehensive mock datasets so you can test the system immediately without requiring an active Gemini API key:
 
-```sql
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- 1. Users Profile Table
-CREATE TABLE public.users (
-  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  avatar_url TEXT,
-  dob DATE,
-  gender TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- Enable RLS for users
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own profile" ON public.users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
-
--- 2. Reports Table
-CREATE TABLE public.reports (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
-  report_name TEXT NOT NULL,
-  report_type TEXT NOT NULL,
-  file_url TEXT,
-  report_date DATE NOT NULL,
-  lab_name TEXT,
-  patient_name TEXT,
-  patient_age INT,
-  patient_gender TEXT,
-  status TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
-ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can manage own reports" ON public.reports FOR ALL USING (auth.uid() = user_id);
-
--- 3. Report Tests Table
-CREATE TABLE public.report_tests (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  report_id UUID REFERENCES public.reports(id) ON DELETE CASCADE NOT NULL,
-  test_name TEXT NOT NULL,
-  value NUMERIC,
-  value_text TEXT NOT NULL,
-  unit TEXT,
-  reference_min NUMERIC,
-  reference_max NUMERIC,
-  reference_text TEXT,
-  status TEXT NOT NULL,
-  ai_explanation TEXT,
-  what_it_measures TEXT,
-  what_result_means TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
-ALTER TABLE public.report_tests ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own tests" ON public.report_tests FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM public.reports 
-    WHERE reports.id = report_tests.report_id AND reports.user_id = auth.uid()
-  )
-);
-
--- 4. Report Analysis Table
-CREATE TABLE public.report_analysis (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  report_id UUID REFERENCES public.reports(id) ON DELETE CASCADE NOT NULL,
-  summary TEXT NOT NULL,
-  tests_count INT NOT NULL,
-  normal_count INT NOT NULL,
-  attention_count INT NOT NULL,
-  unknown_count INT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
-ALTER TABLE public.report_analysis ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own summaries" ON public.report_analysis FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM public.reports 
-    WHERE reports.id = report_analysis.report_id AND reports.user_id = auth.uid()
-  )
-);
-
--- 5. Chat Messages Table
-CREATE TABLE public.chat_messages (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
-  report_id UUID REFERENCES public.reports(id) ON DELETE CASCADE,
-  role TEXT NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
-ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can manage own chats" ON public.chat_messages FOR ALL USING (auth.uid() = user_id);
-```
-
-Add your Supabase URL and Anon Keys in the `.env.local` file or directly inside the **Settings** page in the dashboard to connect dynamically.
+| Report Type | Key Biomarkers Included | Range Indicators Tested |
+|---|---|---|
+| **🩸 Complete Blood Count (CBC)** | Hemoglobin, RBC, WBC, Platelets, Hematocrit, MCV, MCH | High, Low, & Normal |
+| **☀️ Vitamin & Mineral Panel** | Vitamin D (25-OH), Vitamin B12, Serum Iron, Ferritin | Low Deficiencies & Normal |
+| **🫀 Lipid & Metabolic Panel** | Total Cholesterol, HDL, LDL, Triglycerides, Fasting Blood Glucose | High Risk & Borderline |
 
 ---
 
-## Medical & Safety Disclaimer
+## 🛡️ Security & Privacy Guardrails
 
-**IMPORTANT: LabLens provides AI-generated educational explanations of medical and laboratory reports. It does not provide medical diagnoses, treatment recommendations, or professional medical advice. Always consult a qualified healthcare professional for interpretation of medical results and healthcare decisions.**
+- 🔒 **No PHI Retention in Demo Mode:** All uploads in demo mode execute purely in browser memory without sending patient medical records to third parties.
+- 🩺 **Strict AI Medical Guardrails:** The AI prompt design enforces safety disclaimers: it strictly acts as an educational translator, explicitly refusing to write drug prescriptions or diagnose fatal conditions.
+- 🔑 **Environment Key Isolation:** Server Actions ensure third-party API credentials (`GEMINI_API_KEY`) are never exposed to the client bundle.
 
-All AI prompts, chat flows, and table visualizations strictly follow non-alarmist, objective patterns:
-- Values are matched strictly against the boundaries printed on the patient's uploaded slip.
-- The assistant is hard-blocked from recommending dosages, medication adjustments, or asserting definite diagnostic statements (e.g. "You have diabetes").
-- Safety prompts strongly recommend doctor consults.
+---
+
+## ⚠️ Medical Disclaimer
+
+> [!IMPORTANT]
+> **LabLens is designed for educational and informational purposes only.**  
+> The data analysis, explanations, and insights generated by this application do **not** constitute medical advice, clinical diagnoses, or treatment plans. Always consult a qualified healthcare professional or licensed physician regarding any medical conditions, abnormal laboratory results, or therapeutic questions.
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+1. Fork the Project
+2. Create your Feature Branch (\`git checkout -b feature/AmazingFeature\`)
+3. Commit your Changes (\`git commit -m 'Add some AmazingFeature'\`)
+4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+Distributed under the **MIT License**. See \`LICENSE\` for more information.
+
+<p align="center">
+  <sub>Built with ❤️ for accessible healthcare and intuitive medical literacy.</sub>
+</p>
+`;
+
+const targetPath = 'd:/PROJECTS/REPORT LEBLENS/README.md';
+fs.writeFileSync(targetPath, readmeContent, 'utf8');
+console.log('README.md written successfully to ' + targetPath);
+`;
+
+const scriptPath = 'C:/Users/dhruv/.gemini/antigravity-ide/brain/8a89d46a-551e-4601-a0db-656b8845c24f/scratch/write_readme.js';
+fs.mkdirSync(path.dirname(scriptPath), { recursive: true });
+fs.writeFileSync(scriptPath, readmeContent, 'utf8');
+console.log('Scratch script written successfully');
